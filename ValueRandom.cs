@@ -302,6 +302,14 @@ public readonly struct ValueRandom : IEquatable<ValueRandom>
 		return NextDouble(out next) < chance;
 	}
 
+        /// <summary>
+        ///     Generates a random byte between 0 [inclusive] and 255 [inclusive].
+        /// </summary>
+        public byte NextByte(out ValueRandom next)
+        {
+            return (byte)NextUInt32(out next);
+        }
+
 	/// <summary>
 	///     Fills the provided byte array with random bytes.
 	/// </summary>
