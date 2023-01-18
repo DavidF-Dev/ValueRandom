@@ -45,6 +45,30 @@ public readonly struct ValueRandom : IEquatable<ValueRandom>
 
 	#region Static methods
 
+	/// <summary>
+	///     Hash the provided int span of seeds into a singular seed which is unlikely to cause collisions.
+	/// </summary>
+	public static int GetSeed(ReadOnlySpan<int> seeds)
+	{
+		if(seeds.Length == 0)
+		{
+			return 0;
+		}
+		
+		// https://stackoverflow.com/a/263416
+		// https://stackoverflow.com/a/62811435
+		unchecked
+		{
+			int hash = (int)2166136261;
+			foreach(int seed in seeds)
+			{
+				hash = (hash * 16777619) ^ seed.GetHashCode();
+			}
+			
+			return hash;
+		}
+	}
+
 	public static bool operator==(ValueRandom left, ValueRandom right)
 	{
 		return left.Equals(right);
@@ -74,6 +98,36 @@ public readonly struct ValueRandom : IEquatable<ValueRandom>
 	public ValueRandom(int seed)
 	{
 		_x = (uint)seed;
+		_y = Y;
+		_z = Z;
+		_w = W;
+	}
+	
+	/// <summary>
+	///     Intialise a new instance by hashing an int span of seeds into a singular seed which is unlikely to cause collisions.
+	/// </summary>
+	public ValueRandom(ReadOnlySpan<int> seeds)
+	{
+		if(seeds.Length == 0)
+		{
+			_x = 0;
+		}
+		else
+		{
+			// https://stackoverflow.com/a/263416
+			// https://stackoverflow.com/a/62811435
+			unchecked
+			{
+				int hash = (int)2166136261;
+				foreach(int seed in seeds)
+				{
+					hash = (hash * 16777619) ^ seed.GetHashCode();
+				}
+			
+				_x = (uint)hash;
+			}
+		}
+
 		_y = Y;
 		_z = Z;
 		_w = W;
