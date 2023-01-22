@@ -197,7 +197,7 @@ public readonly struct ValueRandom : IEquatable<ValueRandom>
 	}
 
 	/// <summary>
-	///     Generates a random uint between 0 [inclusive[ and uint.MaxValue [inclusive] (fastest method).
+	///     Generates a random uint between 0 [inclusive] and uint.MaxValue [inclusive] (fastest method).
 	/// </summary>
 	public uint NextUInt32(out ValueRandom next)
 	{
@@ -517,6 +517,36 @@ public readonly struct ValueRandom : IEquatable<ValueRandom>
 			default:
 				return source[NextInt32(source.Count, out next)];
 		}
+	}
+
+	/// <summary>
+	///     Gets a random element from the provided collection.
+	/// </summary>
+	public T NextElement<T>(IReadOnlyCollection<T> source, out ValueRandom next)
+	{
+		if(source == null)
+		{
+			throw new ArgumentNullException(nameof(source));
+		}
+
+		if(source.Count == 0)
+		{
+			next = this;
+			return default;
+		}
+
+		int resultIndex = NextInt32(source.Count, out next);
+		int i = 0;
+		foreach(T element in source)
+		{
+			if(i++ == resultIndex)
+			{
+				return element;
+			}
+		}
+
+		// This won't be reached
+		return default;
 	}
 
 	/// <summary>
